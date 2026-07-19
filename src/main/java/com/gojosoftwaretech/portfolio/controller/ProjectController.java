@@ -1,0 +1,54 @@
+package com.gojosoftwaretech.portfolio.controller;
+
+import com.gojosoftwaretech.portfolio.model.Project;
+import com.gojosoftwaretech.portfolio.service.ProjectService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/projects")
+public class ProjectController {
+
+    @Autowired
+    private ProjectService projectService;
+
+    // GET all projects
+    @GetMapping
+    public List<Project> getAllProjects() {
+        return projectService.getAllProjects();
+    }
+
+    // GET single project by id
+    @GetMapping("/{id}")
+    public ResponseEntity<Project> getProjectById(@PathVariable Long id) {
+        return projectService.getProjectById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // CREATE new project
+    @PostMapping
+    public Project createProject(@RequestBody Project project) {
+        return projectService.createProject(project);
+    }
+
+    // UPDATE existing project
+    @PutMapping("/{id}")
+    public ResponseEntity<Project> updateProject(@PathVariable Long id, @RequestBody Project project) {
+        Project updated = projectService.updateProject(id, project);
+        if (updated == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updated);
+    }
+
+    // DELETE project
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
+        projectService.deleteProject(id);
+        return ResponseEntity.noContent().build();
+    }
+}
